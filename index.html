@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transcriptor</title>
+  <meta name="description" content="Transcripción de audio gratuita y privada: el audio se procesa en tu propio equipo.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231f4e5f'/><path d='M9 13v6M13 9v14M17 11v10M21 14v4M25 12v8' stroke='%23f4efe6' stroke-width='2.4' stroke-linecap='round'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8"/><path d="M9 13v6M13 9v14M17 11v10M21 14v4M25 12v8"/></svg>
+        <div>
+          <h1>Transcriptor</h1>
+          <p>Audio a texto, gratis y privado. Nada sale de tu equipo.</p>
+        </div>
+      </div>
+      <span id="deviceBadge" class="badge">Detectando…</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- 1. Entrada -->
+    <section class="card">
+      <h2><span class="step">1</span> Audio</h2>
+      <label id="drop" class="drop">
+        <input id="file" type="file" accept="audio/*,video/*,.mp3,.wav,.m4a,.ogg,.webm,.mp4,.mov,.flac">
+        <strong>Arrastra un archivo o haz clic para elegirlo</strong>
+        <span>MP3 · WAV · M4A · OGG · WEBM · MP4 · FLAC</span>
+      </label>
+      <div class="or"><span>o</span></div>
+      <button id="record" class="btn ghost" type="button">
+        <span class="dot"></span><span id="recordLabel">Grabar con micrófono</span>
+      </button>
+
+      <div id="media" class="media" hidden>
+        <div class="media-head">
+          <strong id="mediaName"></strong>
+          <span id="mediaInfo" class="muted"></span>
+        </div>
+        <audio id="player" controls preload="metadata"></audio>
+      </div>
+    </section>
+
+    <!-- 2. Opciones -->
+    <section class="card">
+      <h2><span class="step">2</span> Opciones</h2>
+      <div class="grid">
+        <label class="field">
+          <span>Modelo</span>
+          <select id="model"></select>
+        </label>
+        <label class="field">
+          <span>Idioma del audio</span>
+          <select id="language">
+            <option value="spanish" selected>Español</option>
+            <option value="auto">Detectar automáticamente</option>
+            <option value="english">Inglés</option>
+            <option value="portuguese">Portugués</option>
+            <option value="french">Francés</option>
+            <option value="italian">Italiano</option>
+            <option value="german">Alemán</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Tarea</span>
+          <select id="task">
+            <option value="transcribe" selected>Transcribir</option>
+            <option value="translate">Traducir al inglés</option>
+          </select>
+        </label>
+      </div>
+      <p class="hint">El modelo se descarga una sola vez y queda guardado en el navegador. Los modelos más grandes son más precisos pero más lentos.</p>
+
+      <div class="actions">
+        <button id="start" class="btn primary" type="button" disabled>Transcribir</button>
+        <button id="cancel" class="btn ghost" type="button" hidden>Cancelar</button>
+      </div>
+
+      <div id="progress" class="progress" hidden><div id="bar"></div></div>
+      <p id="status" class="status" role="status" aria-live="polite">Carga un audio para comenzar.</p>
+    </section>
+
+    <!-- 3. Resultado -->
+    <section id="results" class="card" hidden>
+      <div class="results-head">
+        <h2><span class="step">3</span> Transcripción</h2>
+        <span id="wordCount" class="muted"></span>
+      </div>
+      <p class="hint">Puedes corregir el texto directamente. Haz clic en un tiempo para escuchar ese fragmento.</p>
+      <div id="transcript" class="transcript"></div>
+
+      <div class="exports">
+        <button id="copy" class="btn primary" type="button">Copiar texto</button>
+        <button class="btn ghost" data-export="txt" type="button">.txt</button>
+        <button class="btn ghost" data-export="tst" type="button">.txt con tiempos</button>
+        <button class="btn ghost" data-export="srt" type="button">.srt</button>
+        <button class="btn ghost" data-export="vtt" type="button">.vtt</button>
+        <button class="btn ghost" data-export="json" type="button">.json</button>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <p>Funciona con <a href="https://github.com/openai/whisper" target="_blank" rel="noopener">Whisper</a> mediante <a href="https://huggingface.co/docs/transformers.js" target="_blank" rel="noopener">Transformers.js</a>. El audio y el texto nunca se envían a ningún servidor.</p>
+      <p class="muted">Recomendado: Chrome o Edge recientes en computador. En celulares, usa los modelos «tiny» o «base».</p>
+    </footer>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
