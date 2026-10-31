@@ -10,6 +10,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .top-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .badge.logout { text-decoration: none; color: var(--ink); background: transparent; cursor: pointer; }
+    .badge.logout:hover { background: var(--accent-soft); }
+  </style>
 </head>
 <body>
   <header class="top">
@@ -21,7 +26,10 @@
           <p>Audio a texto, gratis y privado. Nada sale de tu equipo.</p>
         </div>
       </div>
-      <span id="deviceBadge" class="badge">Detectando…</span>
+      <div class="top-actions">
+        <span id="deviceBadge" class="badge">Detectando…</span>
+        <a href="/__logout" class="badge logout" title="Cerrar sesión">Cerrar sesión</a>
+      </div>
     </div>
   </header>
 
