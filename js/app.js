@@ -285,6 +285,25 @@ async function copyText() {
   }
 }
 
+// ---------- Enviar al Codificador ----------
+// Deja el texto en el almacenamiento del navegador (mismo sitio) y abre el
+// Codificador en una pestaña nueva, que lo recoge y lo borra al cargar.
+const HANDOFF_KEY = 'transcriptor-a-codificador';
+const CODER_URL = '/codificador/?desde=transcriptor';
+
+function sendToCoder() {
+  if (!state.chunks.length) return;
+  const text = toPlainText(state.chunks);
+  try {
+    localStorage.setItem(HANDOFF_KEY, JSON.stringify({ name: state.fileName, text, at: Date.now() }));
+  } catch (_) {
+    setStatus('No se pudo enviar al Codificador. Descarga el .txt y cárgalo allí.');
+    return;
+  }
+  const w = window.open(CODER_URL, '_blank');
+  if (!w) location.href = CODER_URL; // si el navegador bloquea la pestaña nueva
+}
+
 // ---------- Inicio ----------
 async function init() {
   state.device = await detectDevice();
@@ -313,6 +332,13 @@ async function init() {
   $('#start').addEventListener('click', start);
   $('#cancel').addEventListener('click', cancel);
   $('#copy').addEventListener('click', copyText);
+  const toCoder = Object.assign(document.createElement('button'), {
+    id: 'toCoder', type: 'button', className: 'btn primary',
+    textContent: 'Enviar al Codificador →',
+    title: 'Abre esta transcripción en el Codificador, en una pestaña nueva',
+  });
+  $('.exports').prepend(toCoder);
+  toCoder.addEventListener('click', sendToCoder);
   document.querySelectorAll('[data-export]').forEach((b) =>
     b.addEventListener('click', () => exportAs(b.dataset.export)));
   $('#player').addEventListener('timeupdate', syncHighlight);
