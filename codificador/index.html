@@ -754,6 +754,29 @@ function renderAll(){
 
 /* ---------- arranque ---------- */
 S=load();
+/* --- recepción desde el Transcriptor --- */
+const HANDOFF_KEY='transcriptor-a-codificador';
+function importHandoff(){
+  let raw=null;
+  try{raw=localStorage.getItem(HANDOFF_KEY);if(raw)localStorage.removeItem(HANDOFF_KEY)}catch(e){}
+  if(location.search)history.replaceState(null,'',location.pathname);
+  if(!raw)return;
+  try{
+    const p=JSON.parse(raw);
+    if(!p||!p.text||Date.now()-(p.at||0)>30*60*1000)return;
+    const text=normalize(p.text);
+    const dup=S.docs.find(d=>d.text===text);
+    if(dup){S.activeDoc=dup.id;setTimeout(()=>toast('Esta transcripción ya estaba en el proyecto.'),300);return}
+    const d=addDoc(p.name||'Transcripción',text);
+    setTimeout(()=>toast(`«${d.name}» llegó desde el Transcriptor`),300);
+  }catch(e){}
+}
+importHandoff();
+/* --- sincronía entre pestañas: si otra pestaña guarda, esta se actualiza --- */
+window.addEventListener('storage',e=>{
+  if(e.key!==KEY||!e.newValue)return;
+  try{const p=JSON.parse(e.newValue);if(p&&Array.isArray(p.docs)){S=p;if(!docById(S.activeDoc))S.activeDoc=S.docs[0]?.id||null;UI.selSegs=UI.selSegs.filter(id=>S.segs.some(s=>s.id===id));hidePop();renderAll()}}catch(err){}
+});
 document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 $('#projName').addEventListener('input',e=>{S.name=e.target.value;save()});
 $('#btnExport').addEventListener('click',exportMenu);
