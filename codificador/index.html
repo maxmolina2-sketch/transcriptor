@@ -53,6 +53,7 @@ nav.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink)
 .btn.ghost:hover{background:var(--sunk)}
 .btn.small{padding:4px 9px;font-size:12px}
 .btn.danger{color:var(--danger)}
+a.btn{text-decoration:none}
 .btn.armed{background:var(--danger-soft);border-color:var(--danger);color:var(--danger)}
 .icon{width:15px;height:15px;flex:none}
 
@@ -172,9 +173,11 @@ footer.note{margin-top:22px;color:var(--ink-3);font-size:12px;display:flex;flex-
       <button type="button" role="tab" data-tab="matriz" aria-selected="false">Matrices</button>
     </nav>
     <div class="actions">
+      <a href="/" class="btn ghost" title="Volver al Transcriptor">← Transcriptor</a>
       <button type="button" class="btn ghost" id="btnOpen">Abrir proyecto</button>
       <button type="button" class="btn ghost" id="btnNew">Nuevo</button>
       <button type="button" class="btn primary" id="btnExport">Exportar</button>
+      <a href="/__logout" class="btn ghost" title="Cerrar sesión">Cerrar sesión</a>
     </div>
   </header>
 
