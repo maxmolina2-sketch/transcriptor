@@ -198,7 +198,7 @@ footer.note{margin-top:22px;color:var(--ink-3);font-size:12px;display:flex;flex-
     <span>El trabajo se guarda automáticamente en este equipo. Para compartirlo, usa Exportar → Proyecto completo.</span>
   </footer>
 
-  <input type="file" id="fileDocs" accept=".txt,.md,.docx,.srt,.vtt,text/plain" multiple hidden>
+  <input type="file" id="fileDocs" accept=".txt,.md,.docx,.srt,.vtt,.json,text/plain,application/json" multiple hidden>
   <input type="file" id="fileProject" accept=".json,application/json" hidden>
 </div>
 
@@ -263,6 +263,15 @@ function speakerAt(text,pos){
     if(ls===0)break;end=ls-1;
   }
   return '';
+}
+// Igual que «toPlainText» del Transcriptor: párrafos tras pausas > 2 s o ~600 caracteres.
+function chunksToText(chunks){
+  const paras=[];let cur='';
+  chunks.forEach((c,i)=>{const gap=i>0?(c.start||0)-(chunks[i-1].end||0):0;
+    if(cur&&(gap>2||cur.length>600)&&/[.?!…]$/.test(cur.trim())){paras.push(cur.trim());cur=''}
+    cur+=String(c.text||'')});
+  if(cur.trim())paras.push(cur.trim());
+  return paras.join('\n\n');
 }
 function normalize(t){return t.replace(/\r\n?/g,'\n').replace(/ /g,' ').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim()}
 function cleanSubs(t){return t.split(/\r?\n/).filter(l=>!/^\s*\d+\s*$/.test(l)&&!/-->/.test(l)&&!/^WEBVTT/.test(l)).join('\n')}
@@ -356,6 +365,11 @@ async function readFiles(files){
       if(ext==='docx'){
         if(!window.mammoth)throw new Error('no se pudo cargar el lector de Word. Guarda el archivo como .txt o pega el texto.');
         text=(await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value;
+      }else if(ext==='json'){
+        const j=JSON.parse(await f.text());
+        if(j&&Array.isArray(j.docs)&&Array.isArray(j.codes)){importProject(JSON.stringify(j));continue}
+        if(!j||!Array.isArray(j.segmentos))throw new Error('no es un archivo .json del Transcriptor.');
+        text=chunksToText(j.segmentos);
       }else{text=await f.text();if(ext==='srt'||ext==='vtt')text=cleanSubs(text)}
       text=normalize(text);
       if(!text)throw new Error('el archivo no tiene texto.');
@@ -447,7 +461,7 @@ function renderDoc(){
   if(!d){
     pane.append(h('div',{class:'empty'},
       h('h3',null,'Carga una transcripción para empezar'),
-      h('p',null,'Acepta archivos .txt, .docx, .srt o .vtt. También puedes pegar directamente el texto que genera el Transcriptor.'),
+      h('p',null,'Acepta archivos .txt, .docx, .srt, .vtt o el .json del Transcriptor. También puedes pegar directamente el texto que genera el Transcriptor.'),
       h('div',{class:'row',style:{'justify-content':'center'}},
         h('button',{type:'button',class:'btn primary',onclick:()=>$('#fileDocs').click()},icon('up'),'Cargar archivos'),
         h('button',{type:'button',class:'btn',onclick:()=>{UI.addingDoc=true;renderSide();const t=$('#pasteText');if(t)t.focus()}},'Pegar texto'))));
